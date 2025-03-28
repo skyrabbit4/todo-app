@@ -1,0 +1,10 @@
+﻿# macOS system files
+.DS_Store
+
+# Build outputs
+bin/
+obj/
+
+# Other
+*.user
+*.log
