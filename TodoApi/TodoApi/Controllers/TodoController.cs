@@ -5,7 +5,7 @@ using TodoApi.Model;
 namespace TodoApi.Controllers
 {
 	[ApiController]
-	[Route("api/[controller")]
+	[Route("api/[controller]")]
 	public class TodoController : ControllerBase
 	{
 		private static List<TodoItem> Todos = new List<TodoItem>();
@@ -59,11 +59,6 @@ namespace TodoApi.Controllers
             Todos.Remove(todo);
             return NoContent(); 
         }
-
-
-
-
-
 
     }
 }
