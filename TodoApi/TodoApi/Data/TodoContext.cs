@@ -1,5 +1,7 @@
 ﻿using System;
-using Microsoft.EmtityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using TodoApi.Model;
+
 namespace TodoApi.Data
 {
 	public class TodoContext:DbContext
