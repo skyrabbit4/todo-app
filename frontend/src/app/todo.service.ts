@@ -12,7 +12,8 @@ export interface TodoItem {
   providedIn: 'root'
 })
 export class TodoService {
-  private apiUrl = 'http://localhost:5048/swagger/index.html'; // Adjust to your actual API port
+  // Set the API URL to your backend's base URL, not Swagger's UI.
+  private apiUrl = 'http://localhost:5048/api';
 
   constructor(private http: HttpClient) {}
 
