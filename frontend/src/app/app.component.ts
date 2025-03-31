@@ -9,14 +9,15 @@ import { TodoService, TodoItem } from './todo.service';
   imports: [CommonModule, ReactiveFormsModule],
   template: `
     <h1>My Todo List</h1>
-
-    <!-- Form for Adding a New Todo -->
-    <form [formGroup]="todoForm" (ngSubmit)="onSubmit()">
+    
+    <!-- Form for Adding/Editing a Todo -->
+    <form [formGroup]="todoForm" (ngSubmit)="editing ? updateTodo() : onSubmit()">
       <input formControlName="title" placeholder="Enter todo title" />
       <label>
         <input type="checkbox" formControlName="isComplete" /> Completed
       </label>
-      <button type="submit">Add Todo</button>
+      <button type="submit">{{ editing ? 'Update' : 'Add' }} Todo</button>
+      <button *ngIf="editing" type="button" (click)="cancelEdit()">Cancel</button>
     </form>
 
     <hr />
@@ -25,6 +26,7 @@ import { TodoService, TodoItem } from './todo.service';
     <ul>
       <li *ngFor="let todo of todos">
         {{ todo.title }} - {{ todo.isComplete ? 'Done' : 'Pending' }}
+        <button (click)="startEdit(todo)">Edit</button>
         <button (click)="deleteTodo(todo)">Delete</button>
       </li>
     </ul>
@@ -32,9 +34,9 @@ import { TodoService, TodoItem } from './todo.service';
 })
 export class AppComponent implements OnInit {
   todos: TodoItem[] = [];
-
-  // Reactive form for creating a new Todo
   todoForm: FormGroup;
+  editing: boolean = false;
+  currentTodo: TodoItem | null = null;
 
   constructor(private fb: FormBuilder, private todoService: TodoService) {
     this.todoForm = this.fb.group({
@@ -50,18 +52,15 @@ export class AppComponent implements OnInit {
   loadTodos(): void {
     this.todoService.getTodos().subscribe({
       next: (data) => (this.todos = data),
-      error: (err) => console.error('Error fetching todos:', err),
+      error: (err) => console.error('Error fetching todos:', err)
     });
   }
 
-  // Called when the form is submitted
   onSubmit(): void {
     if (this.todoForm.valid) {
       this.todoService.createTodo(this.todoForm.value).subscribe({
         next: (newTodo) => {
-          // Add the newly created todo to our list
           this.todos.push(newTodo);
-          // Reset the form
           this.todoForm.reset({ title: '', isComplete: false });
         },
         error: (err) => console.error('Error creating todo:', err)
@@ -69,11 +68,38 @@ export class AppComponent implements OnInit {
     }
   }
 
+  startEdit(todo: TodoItem): void {
+    this.editing = true;
+    this.currentTodo = todo;
+    this.todoForm.patchValue(todo);
+  }
+
+  updateTodo(): void {
+    if (this.todoForm.valid && this.currentTodo) {
+      const updatedTodo: TodoItem = {
+        ...this.currentTodo,
+        ...this.todoForm.value
+      };
+      this.todoService.updateTodo(updatedTodo).subscribe({
+        next: () => {
+          this.loadTodos(); // Refresh list after update
+          this.cancelEdit();
+        },
+        error: (err) => console.error('Error updating todo:', err)
+      });
+    }
+  }
+
+  cancelEdit(): void {
+    this.editing = false;
+    this.currentTodo = null;
+    this.todoForm.reset({ title: '', isComplete: false });
+  }
+
   deleteTodo(todo: TodoItem): void {
     if (confirm(`Delete "${todo.title}"?`)) {
       this.todoService.deleteTodo(todo.id).subscribe({
         next: () => {
-          // Remove from our local array
           this.todos = this.todos.filter(t => t.id !== todo.id);
         },
         error: (err) => console.error('Error deleting todo:', err)
