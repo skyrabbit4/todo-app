@@ -1,9 +1,7 @@
+// filepath: /Users/shubhamkaushik/Desktop/TodoApp/frontend/src/app/app.routes.ts
 import { Routes } from '@angular/router';
-import { TodoListComponent } from './todo-list/todo-list.component';
-import { TodoFormComponent } from './todo-form/todo-form.component';
+import { AppComponent } from './app.component';
 
-export const appRoutes: Routes = [
-  { path: '', component: TodoListComponent },
-  { path: 'add', component: TodoFormComponent },
-  { path: 'edit/:id', component: TodoFormComponent }
+export const routes: Routes = [
+  { path: '', component: AppComponent }
 ];
