@@ -67,6 +67,7 @@ import { TodoService, TodoItem } from './todo.service';
     }
     h1 {
       color: #1976d2;
+      font-size: 2.5rem;
       text-align: center;
       margin-bottom: 20px;
       font-weight: 600;
@@ -96,7 +97,6 @@ export class AppComponent implements OnInit {
   currentTodo: TodoItem | null = null;
 
   constructor(private fb: FormBuilder, private todoService: TodoService) {
-    // Initialize the reactive form with validation
     this.todoForm = this.fb.group({
       title: ['', Validators.required],
       isComplete: [false]
@@ -107,7 +107,6 @@ export class AppComponent implements OnInit {
     this.loadTodos();
   }
 
-  // Load all todos from the backend
   loadTodos(): void {
     this.todoService.getTodos().subscribe({
       next: (data) => (this.todos = data),
@@ -115,7 +114,6 @@ export class AppComponent implements OnInit {
     });
   }
 
-  // Add a new todo using the form values
   onSubmit(): void {
     if (this.todoForm.valid) {
       this.todoService.createTodo(this.todoForm.value).subscribe({
@@ -128,14 +126,12 @@ export class AppComponent implements OnInit {
     }
   }
 
-  // Start editing a selected todo
   startEdit(todo: TodoItem): void {
     this.editing = true;
     this.currentTodo = todo;
     this.todoForm.patchValue(todo);
   }
 
-  // Update the todo item with new form data
   updateTodo(): void {
     if (this.todoForm.valid && this.currentTodo) {
       const updatedTodo: TodoItem = {
@@ -144,7 +140,7 @@ export class AppComponent implements OnInit {
       };
       this.todoService.updateTodo(updatedTodo).subscribe({
         next: () => {
-          this.loadTodos();
+          this.loadTodos(); // Refresh list after update
           this.cancelEdit();
         },
         error: (err) => console.error('Error updating todo:', err)
@@ -152,14 +148,12 @@ export class AppComponent implements OnInit {
     }
   }
 
-  // Cancel editing mode and reset the form
   cancelEdit(): void {
     this.editing = false;
     this.currentTodo = null;
     this.todoForm.reset({ title: '', isComplete: false });
   }
 
-  // Delete a todo item
   deleteTodo(todo: TodoItem): void {
     if (confirm(`Delete "${todo.title}"?`)) {
       this.todoService.deleteTodo(todo.id).subscribe({
