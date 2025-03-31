@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -15,6 +16,7 @@ import { TodoService, TodoItem } from './todo.service';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     MatFormFieldModule,
     MatInputModule,
     MatCheckboxModule,
@@ -43,11 +45,19 @@ import { TodoService, TodoItem } from './todo.service';
         </div>
       </form>
 
+      <!-- Move the search container below the form -->
+      <div class="search-container">
+        <mat-form-field appearance="fill">
+          <mat-label>Search todos...</mat-label>
+          <input matInput [(ngModel)]="searchTerm" placeholder="Search todos..." />
+        </mat-form-field>
+      </div>
+
       <mat-divider></mat-divider>
 
-      <!-- Display List of Todos -->
+      <!-- Display Filtered List of Todos -->
       <mat-list>
-        <mat-list-item *ngFor="let todo of todos">
+        <mat-list-item *ngFor="let todo of filteredTodos">
           <div class="todo-item">
             <span>{{ todo.title }} - {{ todo.isComplete ? 'Done' : 'Pending' }}</span>
             <div class="action-buttons">
@@ -82,6 +92,9 @@ import { TodoService, TodoItem } from './todo.service';
       display: flex;
       gap: 10px;
     }
+    .search-container {
+      margin-bottom: 20px;
+    }
     .todo-item {
       display: flex;
       justify-content: space-between;
@@ -95,6 +108,7 @@ export class AppComponent implements OnInit {
   todoForm: FormGroup;
   editing: boolean = false;
   currentTodo: TodoItem | null = null;
+  searchTerm: string = '';
 
   constructor(private fb: FormBuilder, private todoService: TodoService) {
     this.todoForm = this.fb.group({
@@ -140,7 +154,7 @@ export class AppComponent implements OnInit {
       };
       this.todoService.updateTodo(updatedTodo).subscribe({
         next: () => {
-          this.loadTodos(); // Refresh list after update
+          this.loadTodos();
           this.cancelEdit();
         },
         error: (err) => console.error('Error updating todo:', err)
@@ -163,5 +177,15 @@ export class AppComponent implements OnInit {
         error: (err) => console.error('Error deleting todo:', err)
       });
     }
+  }
+
+  // Filtered list of todos based on the search term
+  get filteredTodos(): TodoItem[] {
+    if (!this.searchTerm.trim()) {
+      return this.todos;
+    }
+    return this.todos.filter(todo =>
+      todo.title.toLowerCase().includes(this.searchTerm.toLowerCase())
+    );
   }
 }
