@@ -18,18 +18,18 @@ export class TodoService {
   constructor(private http: HttpClient) {}
 
   getTodos(): Observable<TodoItem[]> {
-    return this.http.get<TodoItem[]>(`${this.apiUrl}/todo`);
+    return this.http.get<TodoItem[]>(`${this.apiUrl}/Todo`);
   }
 
   createTodo(todo: Omit<TodoItem, 'id'>): Observable<TodoItem> {
-    return this.http.post<TodoItem>(`${this.apiUrl}/todo`, todo);
+    return this.http.post<TodoItem>(`${this.apiUrl}/Todo`, todo);
   }
 
   updateTodo(todo: TodoItem): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/todo/${todo.id}`, todo);
+    return this.http.put<void>(`${this.apiUrl}/Todo/${todo.id}`, todo);
   }
 
   deleteTodo(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/todo/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/Todo/${id}`);
   }
 }
