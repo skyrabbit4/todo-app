@@ -1,37 +1,77 @@
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButtonModule } from '@angular/material/button';
+import { MatListModule } from '@angular/material/list';
+import { MatDividerModule } from '@angular/material/divider';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { TodoService, TodoItem } from './todo.service';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { TodoItem, TodoService } from './todo.service';
+
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatCheckboxModule, MatButtonModule, MatListModule, MatDividerModule],
   template: `
-    <h1>My Todo List</h1>
-    
-    <!-- Form for Adding/Editing a Todo -->
-    <form [formGroup]="todoForm" (ngSubmit)="editing ? updateTodo() : onSubmit()">
-      <input formControlName="title" placeholder="Enter todo title" />
-      <label>
-        <input type="checkbox" formControlName="isComplete" /> Completed
-      </label>
-      <button type="submit">{{ editing ? 'Update' : 'Add' }} Todo</button>
-      <button *ngIf="editing" type="button" (click)="cancelEdit()">Cancel</button>
-    </form>
+    <div class="container">
+      <h1>My Todo List</h1>
 
-    <hr />
+      <!-- Form for Adding/Editing a Todo -->
+      <form [formGroup]="todoForm" (ngSubmit)="editing ? updateTodo() : onSubmit()">
+        <mat-form-field appearance="fill">
+          <mat-label>Todo Title</mat-label>
+          <input matInput formControlName="title" placeholder="Enter todo title" />
+        </mat-form-field>
 
-    <!-- Display List of Todos -->
-    <ul>
-      <li *ngFor="let todo of todos">
-        {{ todo.title }} - {{ todo.isComplete ? 'Done' : 'Pending' }}
-        <button (click)="startEdit(todo)">Edit</button>
-        <button (click)="deleteTodo(todo)">Delete</button>
-      </li>
-    </ul>
-  `
+        <mat-checkbox formControlName="isComplete">Completed</mat-checkbox>
+
+        <div class="buttons">
+          <button mat-raised-button color="primary" type="submit">
+            {{ editing ? 'Update' : 'Add' }} Todo
+          </button>
+          <button *ngIf="editing" mat-button type="button" (click)="cancelEdit()">Cancel</button>
+        </div>
+      </form>
+
+      <mat-divider></mat-divider>
+
+      <!-- Display List of Todos -->
+      <mat-list>
+        <mat-list-item *ngFor="let todo of todos">
+          <div class="todo-item">
+            <span>{{ todo.title }} - {{ todo.isComplete ? 'Done' : 'Pending' }}</span>
+            <div>
+              <button mat-button (click)="startEdit(todo)">Edit</button>
+              <button mat-button color="warn" (click)="deleteTodo(todo)">Delete</button>
+            </div>
+          </div>
+        </mat-list-item>
+      </mat-list>
+    </div>
+  `,
+  styles: [`
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .todo-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+  `]
 })
+
+
 export class AppComponent implements OnInit {
   todos: TodoItem[] = [];
   todoForm: FormGroup;
