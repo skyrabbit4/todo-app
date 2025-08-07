@@ -1,4 +1,16 @@
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<div class="container">
+  <h1 class="title">Todo App</h1>
+  <form class="todo-form">
+    <input type="text" placeholder="Add a new task" class="todo-input" />
+    <button type="submit" class="add-btn">Add</button>
+  </form>
+  <ul class="todo-list">
+    <li *ngFor="let todo of todos" class="todo-item">
+      {{ todo.text }}
+      <button class="delete-btn">Delete</button>
+    </li>
+  </ul>
+</div><!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
 <!-- * * * * * * * * * * * The content below * * * * * * * * * * * -->
 <!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * -->
 <!-- * * * * * * * * * * and can be replaced.  * * * * * * * * * * -->
